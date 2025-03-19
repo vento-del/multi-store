@@ -4,6 +4,7 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
+import "@shopify/polaris/build/esm/styles.css";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -22,7 +23,7 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/privacy">Privacy policy</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>
