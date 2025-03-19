@@ -2,20 +2,28 @@ import crypto from "crypto";
 
 export function verifyShopifyWebhook(rawPayload, signature, webhookSecret) {
   try {
-    // Convert raw payload to Buffer
-    const rawBody = Buffer.from(rawPayload, 'utf8');
-    
-    // Calculate HMAC using raw body
+    if (!rawPayload || !signature || !webhookSecret) {
+      console.error("Missing required parameters for webhook verification");
+      return false;
+    }
+
+    // Calculate HMAC using raw payload
     const generatedSignature = crypto
       .createHmac("sha256", webhookSecret)
-      .update(rawBody)
+      .update(rawPayload)
       .digest("base64");
 
     // Use timing-safe comparison
-    return crypto.timingSafeEqual(
+    const isValid = crypto.timingSafeEqual(
       Buffer.from(signature),
       Buffer.from(generatedSignature)
     );
+
+    if (!isValid) {
+      console.error("HMAC verification failed");
+    }
+
+    return isValid;
   } catch (error) {
     console.error("Error verifying webhook:", error);
     return false;

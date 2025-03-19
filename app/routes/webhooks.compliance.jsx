@@ -44,6 +44,38 @@ export const action = async ({ request }) => {
       data: webhookData
     });
 
+    // Handle specific compliance webhook topics
+    switch (verifiedTopic) {
+      case "customers/data_request":
+        // Handle customer data request
+        console.log("Customer data request received:", {
+          shop: verifiedShop,
+          customerId: webhookData.customer?.id,
+          timestamp: new Date().toISOString(),
+        });
+        break;
+
+      case "customers/redact":
+        // Handle customer data erasure
+        console.log("Customer data erasure request received:", {
+          shop: verifiedShop,
+          customerId: webhookData.customer?.id,
+          timestamp: new Date().toISOString(),
+        });
+        break;
+
+      case "shop/redact":
+        // Handle shop data erasure
+        console.log("Shop data erasure request received:", {
+          shop: verifiedShop,
+          timestamp: new Date().toISOString(),
+        });
+        break;
+
+      default:
+        console.warn("Unhandled compliance webhook topic:", verifiedTopic);
+    }
+
     // Respond quickly with 200 OK
     return json({ message: "Webhook processed successfully" }, 200);
   } catch (error) {
