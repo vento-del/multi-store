@@ -12,32 +12,24 @@ import {
   Banner,
 } from "@shopify/polaris";
 import { SearchIcon } from "@shopify/polaris-icons";
+import { currencies } from "../data/currencies";
 
 export function CurrencySelector() {
   const [selectedCurrencies, setSelectedCurrencies] = useState([]);
   const [availableCurrencies, setAvailableCurrencies] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Fetch currency data when component mounts
-    fetch('https://openexchangerates.org/api/currencies.json')
-      .then(response => response.json())
-      .then(data => {
-        const currencies = Object.entries(data).map(([code, name]) => ({
-          value: code,
-          label: `${code} - ${name}`
-        }));
-        setAvailableCurrencies(currencies);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching currencies:', error);
-        setLoading(false);
-      });
+    // Convert currencies object to array format needed for Select
+    const currencyOptions = Object.entries(currencies).map(([code, name]) => ({
+      value: code,
+      label: `${code} - ${name}`
+    }));
+    setAvailableCurrencies(currencyOptions);
 
     // Fetch existing selected currencies from metafield
     fetch('/api/currencies')

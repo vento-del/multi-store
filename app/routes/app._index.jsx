@@ -1,14 +1,23 @@
-import { Page, Layout, Card, Text, BlockStack, Button, Link, Box, InlineStack, ButtonGroup } from "@shopify/polaris";
+import { Page, Layout, Card, Text, BlockStack, Button, Link, Box, InlineStack } from "@shopify/polaris";
 import { CurrencySelector } from "../components/CurrencySelector";
 import { authenticate } from "../shopify.server";
 import { useState } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { json } from "@remix-run/node";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-  return null;
+  const { admin, session } = await authenticate.admin(request);
+  
+  // Get shop data from session
+  const shop = session.shop.replace(".myshopify.com", "");
+  
+  return json({
+    shop
+  });
 };
 
 export default function Index() {
+  const { shop } = useLoaderData();
   const [copied, setCopied] = useState("");
 
   const handleCopy = (text, type) => {
@@ -17,30 +26,33 @@ export default function Index() {
     setTimeout(() => setCopied(""), 2000);
   };
 
-  const htmlWithCurrency = "<span class='currency-changer'>rs. {{ amount }}</span>";
-  const htmlWithoutCurrency = "<span class='currency-changer'>rs. {{ amount }}</span>";
+  const htmlWithCurrency = '<span class="currency-changer">rs. {{ amount }}</span>';
+  const htmlWithoutCurrency = '<span class="currency-changer">{{ amount }}</span>';
+
+  const themeEditorUrl = `https://${shop}.myshopify.com/admin/themes/current/editor?context=apps&template=index&activateAppId=010de1f3-20a8-4c27-8078-9d5535ccae26/helloCurrency`;
 
   return (
     <Page>
       <BlockStack gap="500">
+        <Text variant="headingXl" as="h1">Dashboard</Text>
         <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400" padding="400">
-                <Text variant="headingMd" as="h2">
+                <Text variant="headingLg" as="h2">
                   Step 1: Set up money format
                 </Text>
                 <Text as="p" variant="bodyMd">
                   This option allows you to set the money format of your store, which is essential for the app to function seamlessly.
                 </Text>
-                <Text as="p" variant="headingMd">
+                <Text as="p" variant="headingLg">
                   Steps to Follow
                 </Text>
                 <BlockStack gap="300">
                   <Text as="p">
                     Go to{" "}
                     <Link url="https://admin.shopify.com/store/teststorecvd/settings/general#currency-display" target="_blank">
-                      Shopify Settings -> General
+                      Shopify Settings {'->'} General
                     </Link>
                   </Text>
                   <Text as="p">Under Store Currency section, select Change formatting</Text>
@@ -55,7 +67,7 @@ export default function Index() {
                         <Text variant="headingMd" as="h3">HTML with currency</Text>
                         <Box background="bg-surface-secondary" padding="300" borderRadius="200">
                           <InlineStack align="space-between">
-                            <Text as="span" variant="bodyMd">{htmlWithCurrency}</Text>
+                            <Text as="span" variant="bodyLg">{htmlWithCurrency}</Text>
                             <Button
                               onClick={() => handleCopy(htmlWithCurrency, "with")}
                               variant="plain"
@@ -64,6 +76,9 @@ export default function Index() {
                             </Button>
                           </InlineStack>
                         </Box>
+                        <Text as="p" variant="bodySm" tone="subdued">
+  Note:  {"{{"}$amount {"}}"}USD is a placeholder. Replace it with your actual HTML without currency format from your store settings.
+</Text>
                       </BlockStack>
                     </Box>
 
@@ -72,7 +87,7 @@ export default function Index() {
                         <Text variant="headingMd" as="h3">HTML without currency</Text>
                         <Box background="bg-surface-secondary" padding="300" borderRadius="200">
                           <InlineStack align="space-between">
-                            <Text as="span" variant="bodyMd">{htmlWithoutCurrency}</Text>
+                            <Text as="span" variant="bodyLg">{htmlWithoutCurrency}</Text>
                             <Button
                               onClick={() => handleCopy(htmlWithoutCurrency, "without")}
                               variant="plain"
@@ -81,6 +96,9 @@ export default function Index() {
                             </Button>
                           </InlineStack>
                         </Box>
+                       <Text as="p" variant="bodySm" tone="subdued">
+  Note:  {"{{"}$amount {"}}"} is a placeholder. Replace it with your actual HTML without currency format from your store settings.
+</Text>
                       </BlockStack>
                     </Box>
                   </BlockStack>
@@ -88,32 +106,36 @@ export default function Index() {
               </BlockStack>
             </Card>
           </Layout.Section>
-        </Layout>
 
-        <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400" padding="400">
-                <Text variant="headingMd" as="h2">
-                  Select Currency
+              
+                <Text variant="headingLg" as="h2">
+                  Step 2: Select Currency
                 </Text>
                 <CurrencySelector />
               </BlockStack>
             </Card>
           </Layout.Section>
-        </Layout>
 
-        <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400" padding="400">
-                <Text variant="headingMd" as="h2">
-                  Box 2
+                <Text variant="headingLg" as="h2">
+                  Step 3: Theme Editor Access
                 </Text>
-                <Text as="p">
-                  Content for Box 2 will be added here
+                <Text as="p" variant="bodyLg">
+                  Click below to customize the app's appearance in your theme:
                 </Text>
-                <Button>Click me</Button>
+                <Button
+                  variant="primary"
+                  url={themeEditorUrl}
+                  target="_blank"
+                  external
+                >
+                  Open Theme Editor
+                </Button>
               </BlockStack>
             </Card>
           </Layout.Section>
