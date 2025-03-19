@@ -2,20 +2,7 @@ import { Page, Layout, Card, TextContainer, Text } from "@shopify/polaris";
 import { useEffect } from "react";
 
 export default function PrivacyPolicy() {
-  useEffect(() => {
-    const script1 = document.createElement("script");
-    script1.innerHTML = "window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}";
-    document.body.appendChild(script1);
-
-    const script2 = document.createElement("script");
-    script2.src = "https://salesiq.zohopublic.in/widget?wc=siq8db097391d7cb2f1c66fd31d72e60937f22ac00d3895c6e3f03078db00b002a6";
-
-
-
-    script2.id = "zsiqscript";
-    script2.defer = true;
-    document.body.appendChild(script2);
-  }, []);
+  
 
   return (
     <Page title="Privacy Policy">

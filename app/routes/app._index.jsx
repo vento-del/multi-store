@@ -4,6 +4,9 @@ import { authenticate } from "../shopify.server";
 import { useState } from "react";
 import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
+import { useEffect } from "react";
+
+
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -17,6 +20,20 @@ export const loader = async ({ request }) => {
 };
 
 export default function Index() {
+  useEffect(() => {
+    const script1 = document.createElement("script");
+    script1.innerHTML = "window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}";
+    document.body.appendChild(script1);
+
+    const script2 = document.createElement("script");
+    script2.src = "https://salesiq.zohopublic.in/widget?wc=siq8db097391d7cb2f1c66fd31d72e60937f22ac00d3895c6e3f03078db00b002a6";
+
+
+
+    script2.id = "zsiqscript";
+    script2.defer = true;
+    document.body.appendChild(script2);
+  }, []);
   const { shop } = useLoaderData();
   const [copied, setCopied] = useState("");
 
@@ -126,7 +143,7 @@ export default function Index() {
                   Step 3: Theme Editor Access
                 </Text>
                 <Text as="p" variant="bodyLg">
-                  Click below to customize the app's appearance in your theme:
+                  Click below to add currency selector to your website
                 </Text>
                 <Button
                   variant="primary"
@@ -134,7 +151,7 @@ export default function Index() {
                   target="_blank"
                   external
                 >
-                  Open Theme Editor
+                  Add Currency Selector
                 </Button>
               </BlockStack>
             </Card>

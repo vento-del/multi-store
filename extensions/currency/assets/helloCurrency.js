@@ -975,6 +975,11 @@ const currencyElements = {
         money_format: "{{amount}}",
         money_with_currency_format: "{{amount}} ZWD",
         currency_symbol: "ZWD"
+    },
+    ZWL: {
+        money_format: "{{amount}}",
+        money_with_currency_format: "{{amount}} ZWL",
+        currency_symbol: "ZWL"
     }
 }
 
