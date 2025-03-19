@@ -1,9 +1,8 @@
 // const currency_convertorid = document.getElementById("currency_convertorid");
 const currency_content_list = document.getElementById('currency_content_list');
-console.log('currency code', currency_convertorid);
 
-const currencyConvertorInput = document.getElementById("currency_convertorid");
-console.log("Raw input value:", currencyConvertorInput.value.trim());
+
+
 
 // const currencySpan = document.querySelector('.curriency_metafiled_span');
 
@@ -15,11 +14,8 @@ if (currencySpan) {
         // Parse the JSON from the span text
         let currencyData = JSON.parse(currencySpan.textContent);
 
-        // Remove the "0" key if it exists
-        delete currencyData["0"];
-
-        // Save the cleaned data into a new object
-        const cleanedCurrencyData = { ...currencyData };
+        // Save the cleaned data into a new array
+        const cleanedCurrencyData = [...currencyData];
 
         console.log('new currency data', cleanedCurrencyData);
 
@@ -27,17 +23,18 @@ if (currencySpan) {
         const currencyList = document.getElementById('currency_content_list');
         currencyList.innerHTML = ''; // Clear existing content
 
-        for (const [code, name] of Object.entries(cleanedCurrencyData)) {
+        cleanedCurrencyData.forEach(currency => {
             let li = document.createElement('li');
-            li.textContent = `${name} (${code})`;
-            li.setAttribute('value', code); // Store the currency code
+            li.textContent = currency.label; // Display label in the dropdown
+            li.setAttribute('value', currency.value); // Store the currency code
             li.style.cursor = 'pointer'; // Make it clickable
             currencyList.appendChild(li);
-        }
+        });
     } catch (error) {
         console.error("Error parsing JSON:", error);
     }
 }
+
 
 document.getElementById('custom-button').addEventListener('click', function () {
     var currencyList = document.getElementById('currency-list');
@@ -49,7 +46,8 @@ document.getElementById('custom-button').textContent = `${currencyCode}`;
 
 // Function to update prices based on selected currency
 function updatePrices(selectedCurrency, exchangeRates) {
-    var product_price = document.querySelectorAll('.currencySelector');
+    var product_price = document.querySelectorAll('.currency-changer');
+    console.log('product_price', product_price);
 
     product_price.forEach(function (span) {
         if (!span.hasAttribute('data-original-price')) {

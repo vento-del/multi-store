@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "0a30b7aa0e62e03c06c431f9f17311b4"
-application_url = "https://pattern-incorporate-ann-egypt.trycloudflare.com"
+application_url = "https://existence-mature-made-crm.trycloudflare.com"
 embedded = true
 name = "Currency Converter"
 handle = "currency-converter-vento"
@@ -27,9 +27,9 @@ scopes = "write_products,read_products"
 
 [auth]
 redirect_urls = [
-  "https://pattern-incorporate-ann-egypt.trycloudflare.com/auth/callback",
-  "https://pattern-incorporate-ann-egypt.trycloudflare.com/auth/shopify/callback",
-  "https://pattern-incorporate-ann-egypt.trycloudflare.com/api/auth/callback"
+  "https://existence-mature-made-crm.trycloudflare.com/auth/callback",
+  "https://existence-mature-made-crm.trycloudflare.com/auth/shopify/callback",
+  "https://existence-mature-made-crm.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
