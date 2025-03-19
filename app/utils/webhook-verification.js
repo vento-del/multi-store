@@ -1,5 +1,6 @@
 import crypto from "crypto";
 
+// Shopify webhook verification utility
 export function verifyShopifyWebhook(rawPayload, signature, webhookSecret) {
   try {
     if (!rawPayload || !signature || !webhookSecret) {
