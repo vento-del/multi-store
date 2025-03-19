@@ -1,61 +1,54 @@
 import { authenticate } from "../shopify.server";
 import { verifyShopifyWebhook } from "../utils/webhook-verification";
+import { json } from "@remix-run/node";
 
 export const action = async ({ request }) => {
-  // Get the raw body for HMAC verification
-  const rawBody = await request.text();
-  
-  // Verify the webhook signature
-  const isValid = verifyShopifyWebhook(
-    request,
-    rawBody,
-    process.env.SHOPIFY_WEBHOOK_SECRET
-  );
+  try {
+    // Clone the request before authentication to preserve the body
+    const reqClone = request.clone();
+    const rawPayload = await reqClone.text();
 
-  if (!isValid) {
-    console.error("Invalid webhook signature");
-    return new Response("Invalid webhook signature", { status: 401 });
+    // Get required headers
+    const hmac = request.headers.get("x-shopify-hmac-sha256");
+    const topic = request.headers.get("x-shopify-topic");
+    const shop = request.headers.get("x-shopify-shop-domain");
+
+    // Validate required headers
+    if (!hmac || !topic || !shop) {
+      console.error("Missing required Shopify webhook headers");
+      return json({ message: "Missing required headers" }, 401);
+    }
+    
+    // Verify webhook signature using raw payload
+    const isValid = verifyShopifyWebhook(
+      rawPayload,
+      hmac,
+      process.env.SHOPIFY_API_SECRET
+    );
+
+    if (!isValid) {
+      console.error("Invalid webhook signature");
+      return json({ message: "Invalid signature" }, 401);
+    }
+
+    // Authenticate and get webhook data
+    const { topic: verifiedTopic, shop: verifiedShop, session } = await authenticate.webhook(request);
+
+    // Parse the payload for processing
+    const webhookData = JSON.parse(rawPayload);
+
+    // Log the webhook data for now
+    console.log('Processing order webhook:', {
+      topic: verifiedTopic,
+      shop: verifiedShop,
+      data: webhookData
+    });
+
+    // Respond quickly with 200 OK
+    return json({ message: "Webhook processed successfully" }, 200);
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    // Still return 200 to acknowledge receipt
+    return json({ message: "Webhook received with errors" }, 200);
   }
-
-  const { topic, shop, session } = await authenticate.webhook(request);
-
-  if (!request.ok) {
-    throw new Response("Webhook request failed", { status: 500 });
-  }
-
-  switch (topic) {
-    case "orders/create":
-      console.log("Order created:", {
-        shop,
-        orderId: request.body.id,
-        orderNumber: request.body.order_number,
-        totalPrice: request.body.total_price,
-        timestamp: new Date().toISOString(),
-      });
-      break;
-
-    case "orders/updated":
-      console.log("Order updated:", {
-        shop,
-        orderId: request.body.id,
-        orderNumber: request.body.order_number,
-        totalPrice: request.body.total_price,
-        timestamp: new Date().toISOString(),
-      });
-      break;
-
-    case "orders/cancelled":
-      console.log("Order cancelled:", {
-        shop,
-        orderId: request.body.id,
-        orderNumber: request.body.order_number,
-        timestamp: new Date().toISOString(),
-      });
-      break;
-
-    default:
-      throw new Response("Unhandled webhook topic", { status: 404 });
-  }
-
-  return new Response(null, { status: 200 });
 }; 

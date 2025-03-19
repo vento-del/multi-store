@@ -1,6 +1,5 @@
 import { authenticate } from "../shopify.server";
 import { verifyShopifyWebhook } from "../utils/webhook-verification";
-import { publishWebhookEvent } from "../utils/pubsub-client";
 import { json } from "@remix-run/node";
 
 export const action = async ({ request }) => {
@@ -38,22 +37,18 @@ export const action = async ({ request }) => {
     // Parse the payload for processing
     const webhookData = JSON.parse(rawPayload);
 
-    // Queue the webhook for processing
-    const eventData = {
+    // Log the webhook data for now
+    console.log('Processing product webhook:', {
       topic: verifiedTopic,
       shop: verifiedShop,
-      timestamp: new Date().toISOString(),
       data: webhookData
-    };
-
-    // Publish to Pub/Sub for async processing
-    await publishWebhookEvent(eventData);
+    });
 
     // Respond quickly with 200 OK
-    return json({ message: "Webhook received" }, 200);
+    return json({ message: "Webhook processed successfully" }, 200);
   } catch (error) {
     console.error("Error processing webhook:", error);
     // Still return 200 to acknowledge receipt
-    return json({ message: "Webhook received" }, 200);
+    return json({ message: "Webhook received with errors" }, 200);
   }
 }; 
