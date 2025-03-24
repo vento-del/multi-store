@@ -13,9 +13,27 @@ export const loader = async ({ request }) => {
   
   // Get shop data from session
   const shop = session.shop.replace(".myshopify.com", "");
+
+  // Fetch currency formats
+  const response = await admin.graphql(
+    `#graphql
+      query {
+        shop {
+          currencyFormats {
+            moneyFormat
+            moneyWithCurrencyFormat
+          }
+        }
+      }
+    `
+  );
+
+  const responseJson = await response.json();
+  const currencyFormats = responseJson.data.shop.currencyFormats;
   
   return json({
-    shop
+    shop,
+    currencyFormats
   });
 };
 
@@ -27,14 +45,12 @@ export default function Index() {
 
     const script2 = document.createElement("script");
     script2.src = "https://salesiq.zohopublic.in/widget?wc=siq8db097391d7cb2f1c66fd31d72e60937f22ac00d3895c6e3f03078db00b002a6";
-
-
-
     script2.id = "zsiqscript";
     script2.defer = true;
     document.body.appendChild(script2);
   }, []);
-  const { shop } = useLoaderData();
+  
+  const { shop, currencyFormats } = useLoaderData();
   const [copied, setCopied] = useState("");
 
   const handleCopy = (text, type) => {
@@ -43,8 +59,12 @@ export default function Index() {
     setTimeout(() => setCopied(""), 2000);
   };
 
-  const htmlWithCurrency = '<span class="currency-changer">rs. {{ amount }}</span>';
-  const htmlWithoutCurrency = '<span class="currency-changer">{{ amount }}</span>';
+  // Strip any HTML tags from the currency format
+  const stripHtml = (str) => str.replace(/<[^>]*>/g, '');
+  
+  // Use the fetched currency formats without HTML tags
+  const htmlWithCurrency = `<span class="currency-changer">${stripHtml(currencyFormats.moneyWithCurrencyFormat)}</span>`;
+  const htmlWithoutCurrency = `<span class="currency-changer">${stripHtml(currencyFormats.moneyFormat)}</span>`;
 
   const themeEditorUrl = `https://${shop}.myshopify.com/admin/themes/current/editor?context=apps&template=index&activateAppId=010de1f3-20a8-4c27-8078-9d5535ccae26/helloCurrency`;
 
@@ -93,9 +113,7 @@ export default function Index() {
                             </Button>
                           </InlineStack>
                         </Box>
-                        <Text as="p" variant="bodySm" tone="subdued">
-  Note:  {"{{"}$amount {"}}"}USD is a placeholder. Replace it with your actual HTML without currency format from your store settings.
-</Text>
+                        
                       </BlockStack>
                     </Box>
 
@@ -113,9 +131,7 @@ export default function Index() {
                             </Button>
                           </InlineStack>
                         </Box>
-                       <Text as="p" variant="bodySm" tone="subdued">
-  Note:  {"{{"}$amount {"}}"} is a placeholder. Replace it with your actual HTML without currency format from your store settings.
-</Text>
+                       
                       </BlockStack>
                     </Box>
                   </BlockStack>
