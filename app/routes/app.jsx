@@ -23,6 +23,7 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/countries">Country Redirects</Link>
         <Link to="/app/privacy">Privacy policy</Link>
       </NavMenu>
       <Outlet />

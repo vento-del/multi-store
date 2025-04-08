@@ -1,0 +1,13 @@
+<script src="{{ 'countryRedirect.js' | asset_url }}" defer></script>
+
+<div id="country-redirects-data" style="display: none;">
+  {{ shop.metafields.country-redirects.countries }}
+</div>
+
+{% schema %}
+{
+  "name": "Country Redirects",
+  "target": "body",
+  "settings": []
+}
+{% endschema %}
