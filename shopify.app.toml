@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "f888166f8ea76477a386f44d17981ae7"
-application_url = "https://works-commonwealth-vocational-manually.trycloudflare.com"
+application_url = "https://chocolate-expensive-stupid-loading.trycloudflare.com"
 embedded = true
 name = "Rabbi Multi store redirect"
 handle = "rabbi-multi-store-redirect"
@@ -31,9 +31,9 @@ scopes = "write_products,read_products"
 
 [auth]
 redirect_urls = [
-  "https://works-commonwealth-vocational-manually.trycloudflare.com/auth/callback",
-  "https://works-commonwealth-vocational-manually.trycloudflare.com/auth/shopify/callback",
-  "https://works-commonwealth-vocational-manually.trycloudflare.com/api/auth/callback"
+  "https://chocolate-expensive-stupid-loading.trycloudflare.com/auth/callback",
+  "https://chocolate-expensive-stupid-loading.trycloudflare.com/auth/shopify/callback",
+  "https://chocolate-expensive-stupid-loading.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

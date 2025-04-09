@@ -1,0 +1,106 @@
+<link rel="stylesheet" href="{{ 'popup.css' | asset_url }}">
+<script src="{{ 'popup.js' | asset_url }}" defer></script>
+
+<div id="metafield-popup-container" style="--popup-bg-color: {{ block.settings.popup_bg_color }}; --popup-text-color: {{ block.settings.popup_text_color }}; --popup-title-color: {{ block.settings.popup_title_color }}; --popup-subtitle-color: {{ block.settings.popup_subtitle_color }}; --popup-close-color: {{ block.settings.popup_close_color }}; --button-color: {{ block.settings.button_color }}; --button-text-color: {{ block.settings.button_text_color }};">
+  <div id="metafield-popup-content">
+    <button id="metafield-popup-close">&times;</button>
+
+    <div class="popup-header">
+      <h2 class="popup-title">{{ block.settings.popup_title }}</h2>
+      <p class="popup-subtitle">{{ block.settings.popup_subtitle }}</p>
+    </div>
+
+    <div class="popup-content" id="popup-content-container">
+      <!-- Content will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<div id="metafield-popup-data" style="display: none;">
+  {{ shop.metafields.country-redirects.countries }}
+</div>
+
+<div id="metafield-popup-settings" style="display: none;">
+  {{ shop.metafields.country-redirects.settings }}
+</div>
+
+{%- comment -%}Always include the localization data, we'll check the setting in JavaScript{%- endcomment -%}
+<div id="localization-form-data" style="display: none;">
+  
+    <div class="localization-data">
+      {% for country in localization.available_countries %}
+        <div class="country-data"
+             data-name="{{ country.name }}"
+             data-code="{{ country.iso_code }}"
+              >
+        </div>
+      {% endfor %}
+    </div>
+    {% form 'localization' %}
+      <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
+    {% endform %}
+ 
+</div>
+
+{% schema %}
+{
+  "name": "Country Redirects Popup",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup Title",
+      "default": "Select Your Country"
+    },
+    {
+      "type": "text",
+      "id": "popup_subtitle",
+      "label": "Popup Subtitle",
+      "default": "Choose your location to get the best shopping experience"
+    },
+    {
+      "type": "color",
+      "id": "popup_bg_color",
+      "label": "Popup Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "Popup Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "popup_title_color",
+      "label": "Popup Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "popup_subtitle_color",
+      "label": "Popup Subtitle Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "popup_close_color",
+      "label": "Close Button Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Shop Now Button Color",
+      "default": "#4CAF50"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#FFFFFF"
+    }
+  ]
+}
+{% endschema %}
