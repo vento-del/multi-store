@@ -26,7 +26,7 @@ import {
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
 
   try {
     // First get the shop ID and metafields
@@ -35,6 +35,7 @@ export const loader = async ({ request }) => {
         query {
           shop {
             id
+            myshopifyDomain
             countriesMetafield: metafield(namespace: "country-redirects", key: "countries") {
               value
             }
@@ -59,14 +60,16 @@ export const loader = async ({ request }) => {
     return json({
       countries: countriesMetafield ? JSON.parse(countriesMetafield.value) : [],
       settings,
-      shopId: shopData.data.shop.id
+      shopId: shopData.data.shop.id,
+      shopDomain: shopData.data.shop.myshopifyDomain
     });
   } catch (error) {
     console.error('Error fetching countries:', error);
     return json({ 
       countries: [], 
       settings: { useShopifyMarkets: false },
-      shopId: null, 
+      shopId: null,
+      shopDomain: null,
       error: error.message 
     });
   }
@@ -183,7 +186,7 @@ export const action = async ({ request }) => {
 };
 
 export default function CountriesPage() {
-  const { countries: initialCountries, settings: initialSettings, error: loadError } = useLoaderData();
+  const { countries: initialCountries, settings: initialSettings, error: loadError, shopDomain } = useLoaderData();
   const [countries, setCountries] = useState(initialCountries || []);
   const [settings, setSettings] = useState(initialSettings || { useShopifyMarkets: false });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -600,6 +603,41 @@ export default function CountriesPage() {
           </Text>
         </Modal.Section>
       </Modal>
+      
+      {/* Theme Editor Button */}
+      <Layout>
+        <Layout.Section>
+          <div style={{ marginTop: '20px' }}>
+            <Card>
+              <BlockStack gap="400" padding="400">
+                <Text variant="headingLg" as="h2">
+                  Theme Editor
+                </Text>
+                <Text as="p" variant="bodyLg">
+                  Open the theme editor to customize the appearance of your store and configure app settings.
+                </Text>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (!shopDomain) {
+                      console.error('Shop domain not available');
+                      alert('Could not open theme editor. Please refresh the page and try again.');
+                      return;
+                    }
+                    
+                    window.open(
+                      `https://${shopDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=a35e9bd2-d792-4bf4-8d21-f219eb362bbf/metafieldPopup`,
+                      '_blank'
+                    );
+                  }}
+                >
+                  Open Theme Editor
+                </Button>
+              </BlockStack>
+            </Card>
+          </div>
+        </Layout.Section>
+      </Layout>
     </Page>
   );
 }
